@@ -3,10 +3,11 @@ export type Resource = {
   id: string
   title: string
   description: string
-  type: 'course' | 'video' | 'website' | 'tool'
+  type: 'course' | 'video' | 'website' | 'tool' | 'thread' | 'paper'
   url?: string
   difficulty?: 'beginner' | 'intermediate' | 'advanced'
   duration?: string
+  source?: 'gemini' | 'reddit' | 'reddit-sub' | 'site'
 }
 
 export type PathNode = {

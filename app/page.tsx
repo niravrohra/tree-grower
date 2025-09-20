@@ -10,10 +10,10 @@ import { Textarea } from "@/components/ui/textarea"
 import { TreeVisualization } from "@/components/tree-visualization"
 import { MCQInterface } from "@/components/mcq-interface"
 import { ResourcePanel } from "@/components/resource-panel"
-import type { UserProfile, PathNode } from "@/types/career-types"
+import type { UserProfile, PathNode, Resource } from "@/types/career-types"
 import { generateInitialSuggestions } from "@/lib/career-logic"
 import { TreePine, Sprout, BookOpen } from "lucide-react"
-
+import { useEffect } from "react"
 export default function CareerPathExplorer() {
   const [step, setStep] = useState<"profile" | "exploration">("profile")
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null)
@@ -21,6 +21,59 @@ export default function CareerPathExplorer() {
   const [pathHistory, setPathHistory] = useState<PathNode[]>([])
   const [activePaths, setActivePaths] = useState<PathNode[]>([])
   const [isGenerating, setIsGenerating] = useState(false)
+const [resources, setResources] = useState<Resource[]>([])
+const [resourcesLoading, setResourcesLoading] = useState(false)
+const [resourcesError, setResourcesError] = useState<string | null>(null)
+
+
+useEffect(() => {
+  if (!currentNode) {
+    setResources([])
+    return
+  }
+
+  const q = `${currentNode.title} ${currentNode.description}`.trim()
+  if (!q) return
+
+  const ac = new AbortController()
+  const t = setTimeout(() => {
+    setResourcesLoading(true)
+    setResourcesError(null)
+
+    fetch("/api/resources", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ q }),
+      signal: ac.signal,
+    })
+      .then(async (r) => {
+        const data = await r.json().catch(() => ({}))
+        if (!r.ok) {
+          // Prefer server-provided details
+          const upstreamMsg =
+            typeof data?.upstream === "object"
+              ? (data.upstream.error?.message ||
+                 data.upstream.message ||
+                 JSON.stringify(data.upstream))
+              : undefined
+          const msg = data?.error || upstreamMsg || `Failed to fetch resources (${r.status})`
+          throw new Error(msg)
+        }
+        return data
+      })
+      .then((data) => setResources(Array.isArray(data.resources) ? data.resources : []))
+      .catch((err) => {
+        if (err.name !== "AbortError") setResourcesError(err.message)
+      })
+      .finally(() => setResourcesLoading(false))
+  }, 300)
+
+  return () => {
+    clearTimeout(t)
+    ac.abort()
+  }
+}, [currentNode])
+
 
   const handleProfileSubmit = async (profile: UserProfile) => {
     setUserProfile(profile)
@@ -106,51 +159,70 @@ export default function CareerPathExplorer() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-card to-muted">
       <div className="container mx-auto p-4">
-        <div className="flex flex-col items-center space-y-6">
-          {/* Header */}
-          <div className="text-center py-4">
-            <div className="inline-flex items-center gap-2 bg-primary/10 px-4 py-2 rounded-full mb-2">
-              <Sprout className="w-4 h-4 text-primary" />
-              <span className="text-sm font-medium text-primary">Growing Your Path</span>
-            </div>
-            <h2 className="text-2xl font-bold">Your Career Growth Tree</h2>
-          </div>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+  {/* LEFT side: tree + MCQ */}
+  <div className="lg:col-span-2 flex flex-col items-center space-y-6">
+    {/* Header */}
+    <div className="text-center py-4">
+      <div className="inline-flex items-center gap-2 bg-primary/10 px-4 py-2 rounded-full mb-2">
+        <Sprout className="w-4 h-4 text-primary" />
+        <span className="text-sm font-medium text-primary">Growing Your Path</span>
+      </div>
+      <h2 className="text-2xl font-bold">Your Career Growth Tree</h2>
+    </div>
 
-          {/* Tree Visualization - Main Focus */}
-          <div className="w-full max-w-6xl">
-            <TreeVisualization
-              pathHistory={pathHistory}
-              activePaths={activePaths}
-              currentNode={currentNode}
-              onNodeClick={handleBacktrack}
-              isGenerating={isGenerating}
-            />
-          </div>
+    {/* Tree */}
+    <div className="w-full max-w-6xl">
+      <TreeVisualization
+        pathHistory={pathHistory}
+        activePaths={activePaths}
+        currentNode={currentNode}
+        onNodeClick={handleBacktrack}
+        isGenerating={isGenerating}
+      />
+    </div>
 
-          {/* MCQ Interface - Below the tree */}
-          {currentNode && (
-            <div className="w-full max-w-2xl">
-              <MCQInterface node={currentNode} onSelection={handleNodeSelection} isGenerating={isGenerating} />
-            </div>
+    {/* MCQ */}
+    {currentNode && (
+      <div className="w-full max-w-2xl">
+        <MCQInterface
+          node={currentNode}
+          onSelection={handleNodeSelection}
+          isGenerating={isGenerating}
+        />
+      </div>
+    )}
+  </div>
+
+  {/* RIGHT side: resources */}
+  <aside className="lg:col-span-1">
+    <div className="sticky top-20">
+      <Card className="bg-card/70 backdrop-blur">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <BookOpen className="h-5 w-5" />
+            Resources
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          {resourcesLoading && (
+            <p className="text-sm text-muted-foreground">Asking Gemini for resources…</p>
           )}
-
-          {/* Resources - At the bottom */}
-          {currentNode?.resources && currentNode.resources.length > 0 && (
-            <div className="w-full max-w-4xl">
-              <Card className="bg-card/50 backdrop-blur-sm">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-center justify-center">
-                    <BookOpen className="w-5 h-5" />
-                    Resources to Help You Grow
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <ResourcePanel resources={currentNode.resources} />
-                </CardContent>
-              </Card>
-            </div>
+          {resourcesError && (
+            <p className="text-sm text-red-600">Error: {resourcesError}</p>
           )}
-        </div>
+          {!resourcesLoading && !resourcesError && resources.length === 0 && (
+            <p className="text-sm text-muted-foreground">
+              Select a step to see curated resources.
+            </p>
+          )}
+          {resources.length > 0 && <ResourcePanel resources={resources} />}
+        </CardContent>
+      </Card>
+    </div>
+  </aside>
+</div>
+
       </div>
     </div>
   )
