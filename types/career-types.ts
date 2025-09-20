@@ -1,12 +1,15 @@
-export interface UserProfile {
+// /types/career-types.ts
+export type Resource = {
   id: string
-  currentSituation: string
-  interests: string[]
-  experience: string
-  goals: string
+  title: string
+  description: string
+  type: 'course' | 'video' | 'website' | 'tool'
+  url?: string
+  difficulty?: 'beginner' | 'intermediate' | 'advanced'
+  duration?: string
 }
 
-export interface PathNode {
+export type PathNode = {
   id: string
   title: string
   description: string
@@ -16,19 +19,10 @@ export interface PathNode {
   parentId?: string
 }
 
-export interface Resource {
+export type UserProfile = {
   id: string
-  title: string
-  description: string
-  type: "course" | "article" | "video" | "book" | "website" | "tool"
-  url?: string
-  difficulty?: "beginner" | "intermediate" | "advanced"
-  duration?: string
-}
-
-export interface CareerPath {
-  id: string
-  nodes: PathNode[]
-  isActive: boolean
-  completionPercentage: number
+  currentSituation: string
+  interests: string[]
+  experience?: string
+  goals?: string
 }
