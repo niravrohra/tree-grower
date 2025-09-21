@@ -1,7 +1,6 @@
 "use client"
 
 import type React from "react"
-
 import { useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -251,6 +250,8 @@ function ProfileForm({ onSubmit, isLoading }: { onSubmit: (profile: UserProfile)
     experience: "",
     goals: "",
   })
+  const [resumeFile, setResumeFile] = useState<File | null>(null)
+  const [isAutofilling, setIsAutofilling] = useState(false)
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -263,6 +264,31 @@ function ProfileForm({ onSubmit, isLoading }: { onSubmit: (profile: UserProfile)
     })
   }
 
+  const handleAutofill = async () => {
+    if (!resumeFile) return
+    setIsAutofilling(true)
+    try {
+      const data = new FormData()
+      data.append("resume", resumeFile)
+      const res = await fetch("/api/career/extract", { method: "POST", body: data })
+      const json = await res.json()
+
+      if (!res.ok) throw new Error(json.error || "Autofill failed")
+
+      setFormData({
+        currentSituation: json.currentSituation || "",
+        interests: Array.isArray(json.interests) ? json.interests.join(", ") : "",
+        experience: json.experience || "",
+        goals: json.goals || "",
+      })
+    } catch (err) {
+      console.error(err)
+      alert("Could not autofill from resume.")
+    } finally {
+      setIsAutofilling(false)
+    }
+  }
+
   return (
     <Card className="bg-card/80 backdrop-blur-sm">
       <CardHeader>
@@ -273,6 +299,30 @@ function ProfileForm({ onSubmit, isLoading }: { onSubmit: (profile: UserProfile)
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Resume upload */}
+          <div className="flex flex-col gap-2">
+            <label className="block text-sm font-medium">Resume (PDF/DOCX/TXT)</label>
+            <Input
+              type="file"
+              accept=".pdf,.docx,.txt"
+              onChange={(e) => setResumeFile(e.target.files?.[0] ?? null)}
+            />
+            <div className="flex gap-2">
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={handleAutofill}
+                disabled={!resumeFile || isAutofilling}
+              >
+                {isAutofilling ? "Autofilling..." : "Autofill from Resume"}
+              </Button>
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Upload a resume to pre-fill your info. You can still edit before submitting.
+            </p>
+          </div>
+
+          {/* Current Situation */}
           <div>
             <label className="block text-sm font-medium mb-2">Current Situation</label>
             <Input
@@ -283,6 +333,7 @@ function ProfileForm({ onSubmit, isLoading }: { onSubmit: (profile: UserProfile)
             />
           </div>
 
+          {/* Interests */}
           <div>
             <label className="block text-sm font-medium mb-2">Interests & Hobbies</label>
             <Input
@@ -294,6 +345,7 @@ function ProfileForm({ onSubmit, isLoading }: { onSubmit: (profile: UserProfile)
             <p className="text-xs text-muted-foreground mt-1">Separate multiple interests with commas</p>
           </div>
 
+          {/* Experience */}
           <div>
             <label className="block text-sm font-medium mb-2">Experience & Skills</label>
             <Textarea
@@ -304,6 +356,7 @@ function ProfileForm({ onSubmit, isLoading }: { onSubmit: (profile: UserProfile)
             />
           </div>
 
+          {/* Goals */}
           <div>
             <label className="block text-sm font-medium mb-2">Goals & Aspirations</label>
             <Textarea
@@ -314,7 +367,8 @@ function ProfileForm({ onSubmit, isLoading }: { onSubmit: (profile: UserProfile)
             />
           </div>
 
-          <Button type="submit" className="w-full" size="lg" disabled={isLoading}>
+          {/* Submit */}
+          <Button type="submit" className="w-full" size="lg" disabled={isLoading || isAutofilling}>
             {isLoading ? (
               <>
                 <Sprout className="w-4 h-4 mr-2 animate-spin" />
