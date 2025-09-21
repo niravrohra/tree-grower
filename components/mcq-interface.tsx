@@ -35,14 +35,16 @@ export function MCQInterface({ node, onSelection, isGenerating = false }: MCQInt
       setSelectedOption(null)
     }
   }
-
-  const handleCustomSubmit = () => {
-    if (customInput.trim() && !isGenerating) {
-      onSelection("Custom Path", customInput.trim())
-      setCustomInput("")
-      setShowCustomInput(false)
-    }
+const handleCustomSubmit = () => {
+  const seed = customInput.trim()
+  if (seed && !isGenerating) {
+    // Pass the custom text as BOTH the selection and the custom value.
+    onSelection(seed, seed)
+    setSelectedOption(null)
+    setCustomInput("")
+    setShowCustomInput(false)
   }
+}
 
   return (
     <Card className="bg-gradient-to-br from-green-50/80 to-green-100/50 border-green-200 backdrop-blur-sm">

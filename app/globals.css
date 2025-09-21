@@ -4,75 +4,74 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* Updated to green tree theme */
-  --background: oklch(0.98 0.02 140); /* Very light green background */
-  --foreground: oklch(0.25 0.05 140); /* Dark forest green text */
-  --card: oklch(0.96 0.03 140); /* Light green for cards */
-  --card-foreground: oklch(0.25 0.05 140);
-  --popover: oklch(0.94 0.04 140); /* Slightly darker green for popovers */
-  --popover-foreground: oklch(0.25 0.05 140);
-  --primary: oklch(0.45 0.15 140); /* Forest green primary */
-  --primary-foreground: oklch(0.98 0.02 140);
-  --secondary: oklch(0.75 0.08 120); /* Light sage green secondary */
-  --secondary-foreground: oklch(0.25 0.05 140);
-  --muted: oklch(0.88 0.04 140); /* Muted green */
-  --muted-foreground: oklch(0.5 0.03 140);
-  --accent: oklch(0.6 0.12 160); /* Emerald accent */
-  --accent-foreground: oklch(0.98 0.02 140);
-  --destructive: oklch(0.7 0.15 15);
-  --destructive-foreground: oklch(1 0 0);
-  --border: oklch(0.85 0.04 140);
-  --input: oklch(0.98 0.02 140);
-  --ring: oklch(0.6 0.12 160);
-  --chart-1: oklch(0.45 0.15 140); /* Forest green */
-  --chart-2: oklch(0.6 0.12 160); /* Emerald */
-  --chart-3: oklch(0.75 0.08 120); /* Sage */
-  --chart-4: oklch(0.55 0.1 180); /* Mint */
-  --chart-5: oklch(0.7 0.06 100); /* Lime */
-  --radius: 0.75rem;
-  --sidebar: oklch(0.96 0.03 140);
-  --sidebar-foreground: oklch(0.25 0.05 140);
-  --sidebar-primary: oklch(0.45 0.15 140);
-  --sidebar-primary-foreground: oklch(0.98 0.02 140);
-  --sidebar-accent: oklch(0.6 0.12 160);
-  --sidebar-accent-foreground: oklch(0.25 0.05 140);
-  --sidebar-border: oklch(0.85 0.04 140);
-  --sidebar-ring: oklch(0.6 0.12 160);
+  --background: oklch(1 0 0); /* Pure white background */
+  --foreground: oklch(0.35 0.02 240); /* Dark gray for text */
+  --card: oklch(0.98 0.01 120); /* Very light emerald tint for cards */
+  --card-foreground: oklch(0.25 0.08 150); /* Emerald-tinted dark text */
+  --popover: oklch(1 0 0); /* White popover background */
+  --popover-foreground: oklch(0.35 0.02 240); /* Dark gray text */
+  --primary: oklch(0.45 0.15 160); /* Emerald-600 equivalent */
+  --primary-foreground: oklch(1 0 0); /* White text on primary */
+  --secondary: oklch(0.55 0.12 160); /* Emerald-500 equivalent */
+  --secondary-foreground: oklch(1 0 0); /* White text on secondary */
+  --muted: oklch(0.96 0.01 120); /* Light gray with emerald tint */
+  --muted-foreground: oklch(0.5 0.02 240); /* Medium gray text */
+  --accent: oklch(0.55 0.12 160); /* Emerald accent color */
+  --accent-foreground: oklch(1 0 0); /* White text on accent */
+  --destructive: oklch(0.577 0.245 27.325); /* Keep existing red */
+  --destructive-foreground: oklch(1 0 0); /* White text on destructive */
+  --border: oklch(0.88 0.02 120); /* Light emerald-tinted border */
+  --input: oklch(0.96 0.01 120); /* Light emerald-tinted input background */
+  --ring: oklch(0.45 0.15 160); /* Emerald focus ring */
+  --chart-1: oklch(0.55 0.12 160); /* Emerald for charts */
+  --chart-2: oklch(0.6 0.15 180); /* Teal for charts */
+  --chart-3: oklch(0.65 0.18 140); /* Green for charts */
+  --chart-4: oklch(0.5 0.1 200); /* Blue-green for charts */
+  --chart-5: oklch(0.7 0.2 120); /* Light green for charts */
+  --radius: 0.75rem; /* Increased border radius for friendlier feel */
+  --sidebar: oklch(0.98 0.01 120); /* Light emerald sidebar */
+  --sidebar-foreground: oklch(0.35 0.02 240); /* Dark text */
+  --sidebar-primary: oklch(0.45 0.15 160); /* Emerald primary */
+  --sidebar-primary-foreground: oklch(1 0 0); /* White text */
+  --sidebar-accent: oklch(0.55 0.12 160); /* Emerald accent */
+  --sidebar-accent-foreground: oklch(1 0 0); /* White text */
+  --sidebar-border: oklch(0.88 0.02 120); /* Light emerald border */
+  --sidebar-ring: oklch(0.45 0.15 160); /* Emerald focus ring */
 }
 
 .dark {
-  --background: oklch(0.12 0.03 140);
-  --foreground: oklch(0.9 0.02 140);
-  --card: oklch(0.15 0.04 140);
-  --card-foreground: oklch(0.9 0.02 140);
-  --popover: oklch(0.15 0.04 140);
-  --popover-foreground: oklch(0.9 0.02 140);
-  --primary: oklch(0.6 0.15 140);
-  --primary-foreground: oklch(0.12 0.03 140);
-  --secondary: oklch(0.2 0.05 140);
-  --secondary-foreground: oklch(0.9 0.02 140);
-  --muted: oklch(0.2 0.04 140);
-  --muted-foreground: oklch(0.65 0.03 140);
-  --accent: oklch(0.7 0.12 160);
-  --accent-foreground: oklch(0.12 0.03 140);
-  --destructive: oklch(0.6 0.2 15);
-  --destructive-foreground: oklch(0.95 0 0);
-  --border: oklch(0.2 0.04 140);
-  --input: oklch(0.2 0.04 140);
-  --ring: oklch(0.7 0.12 160);
-  --chart-1: oklch(0.6 0.15 140);
-  --chart-2: oklch(0.7 0.12 160);
-  --chart-3: oklch(0.55 0.08 120);
-  --chart-4: oklch(0.65 0.1 180);
-  --chart-5: oklch(0.75 0.06 100);
-  --sidebar: oklch(0.15 0.04 140);
-  --sidebar-foreground: oklch(0.9 0.02 140);
-  --sidebar-primary: oklch(0.6 0.15 140);
-  --sidebar-primary-foreground: oklch(0.12 0.03 140);
-  --sidebar-accent: oklch(0.2 0.05 140);
-  --sidebar-accent-foreground: oklch(0.9 0.02 140);
-  --sidebar-border: oklch(0.2 0.04 140);
-  --sidebar-ring: oklch(0.7 0.12 160);
+  --background: oklch(0.08 0.01 120); /* Very dark emerald-tinted background */
+  --foreground: oklch(0.95 0.01 120); /* Light emerald-tinted text */
+  --card: oklch(0.12 0.02 120); /* Dark emerald-tinted cards */
+  --card-foreground: oklch(0.95 0.01 120); /* Light text on cards */
+  --popover: oklch(0.12 0.02 120); /* Dark emerald popover */
+  --popover-foreground: oklch(0.95 0.01 120); /* Light text */
+  --primary: oklch(0.6 0.15 160); /* Brighter emerald for dark mode */
+  --primary-foreground: oklch(0.08 0.01 120); /* Dark text on primary */
+  --secondary: oklch(0.2 0.05 120); /* Dark emerald secondary */
+  --secondary-foreground: oklch(0.95 0.01 120); /* Light text */
+  --muted: oklch(0.15 0.02 120); /* Dark emerald muted */
+  --muted-foreground: oklch(0.7 0.02 120); /* Medium light text */
+  --accent: oklch(0.2 0.05 120); /* Dark emerald accent */
+  --accent-foreground: oklch(0.95 0.01 120); /* Light text */
+  --destructive: oklch(0.577 0.245 27.325); /* Keep existing red */
+  --destructive-foreground: oklch(0.95 0.01 120); /* Light text */
+  --border: oklch(0.2 0.05 120); /* Dark emerald border */
+  --input: oklch(0.15 0.02 120); /* Dark emerald input */
+  --ring: oklch(0.6 0.15 160); /* Bright emerald focus ring */
+  --chart-1: oklch(0.6 0.15 160); /* Bright emerald */
+  --chart-2: oklch(0.65 0.18 180); /* Bright teal */
+  --chart-3: oklch(0.7 0.2 140); /* Bright green */
+  --chart-4: oklch(0.55 0.12 200); /* Bright blue-green */
+  --chart-5: oklch(0.75 0.22 120); /* Bright light green */
+  --sidebar: oklch(0.1 0.02 120); /* Dark emerald sidebar */
+  --sidebar-foreground: oklch(0.95 0.01 120); /* Light text */
+  --sidebar-primary: oklch(0.6 0.15 160); /* Bright emerald */
+  --sidebar-primary-foreground: oklch(0.08 0.01 120); /* Dark text */
+  --sidebar-accent: oklch(0.2 0.05 120); /* Dark emerald accent */
+  --sidebar-accent-foreground: oklch(0.95 0.01 120); /* Light text */
+  --sidebar-border: oklch(0.2 0.05 120); /* Dark emerald border */
+  --sidebar-ring: oklch(0.6 0.15 160); /* Bright emerald focus ring */
 }
 
 @theme inline {
@@ -125,39 +124,138 @@
   }
 }
 
-/* Added tree-specific animations and styles */
-@keyframes grow-branch {
+@layer utilities {
+  .animate-float {
+    animation: float 3s ease-in-out infinite;
+  }
+
+  .animate-glow {
+    animation: glow 2s ease-in-out infinite alternate;
+  }
+
+  .animate-bounce-gentle {
+    animation: bounce-gentle 2s ease-in-out infinite;
+  }
+
+  .glass-effect {
+    backdrop-filter: blur(10px);
+    background: rgba(255, 255, 255, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+
+  .dark .glass-effect {
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  /* Added new keyframes for game-like animations */
+  .animate-slideInRight {
+    animation: slideInRight 3s ease-in-out forwards;
+  }
+
+  .animate-fadeOut {
+    animation: fadeOut 2s ease-in-out forwards;
+  }
+
+  .animate-shootingStar {
+    animation: shootingStar 5s ease-in-out infinite;
+  }
+
+  .animate-sparkle {
+    animation: sparkle 1s ease-in-out infinite;
+  }
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes glow {
   from {
-    transform: scale(0);
+    box-shadow: 0 0 5px rgba(16, 185, 129, 0.3);
+  }
+  to {
+    box-shadow: 0 0 20px rgba(16, 185, 129, 0.6);
+  }
+}
+
+@keyframes bounce-gentle {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
     opacity: 0;
   }
   to {
-    transform: scale(1);
+    transform: translateX(0);
     opacity: 1;
   }
 }
 
-@keyframes leaf-rustle {
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+}
+
+@keyframes shootingStar {
+  0% {
+    transform: translateX(0) translateY(0) scale(0);
+    opacity: 1;
+  }
+  50% {
+    transform: translateX(200px) translateY(100px) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(400px) translateY(200px) scale(0);
+    opacity: 0;
+  }
+}
+
+@keyframes sparkle {
   0%,
   100% {
-    transform: rotate(0deg);
+    transform: scale(0) rotate(0deg);
+    opacity: 0;
   }
-  25% {
-    transform: rotate(2deg);
-  }
-  75% {
-    transform: rotate(-2deg);
+  50% {
+    transform: scale(1) rotate(180deg);
+    opacity: 1;
   }
 }
 
-.tree-node {
-  animation: grow-branch 0.5s ease-out;
+::-webkit-scrollbar {
+  width: 8px;
 }
 
-.tree-leaf {
-  animation: leaf-rustle 3s ease-in-out infinite;
+::-webkit-scrollbar-track {
+  background: oklch(0.96 0.01 120);
 }
 
-.tree-branch {
-  background: linear-gradient(45deg, oklch(0.35 0.08 140), oklch(0.4 0.1 120));
+::-webkit-scrollbar-thumb {
+  background: oklch(0.55 0.12 160);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: oklch(0.45 0.15 160);
 }

@@ -14,6 +14,8 @@ import type { UserProfile, PathNode, Resource } from "@/types/career-types"
 import { generateInitialSuggestions } from "@/lib/career-logic"
 import { TreePine, Sprout, BookOpen } from "lucide-react"
 import { useEffect } from "react"
+import { ScrollArea } from "@/components/ui/scroll-area"
+
 export default function CareerPathExplorer() {
   const [step, setStep] = useState<"profile" | "exploration">("profile")
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null)
@@ -32,47 +34,44 @@ useEffect(() => {
     return
   }
 
-  const q = `${currentNode.title} ${currentNode.description}`.trim()
-  if (!q) return
+  const ctrl = new AbortController()
 
-  const ac = new AbortController()
-  const t = setTimeout(() => {
+  const fetchResources = async () => {
     setResourcesLoading(true)
     setResourcesError(null)
 
-    fetch("/api/resources", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ q }),
-      signal: ac.signal,
-    })
-      .then(async (r) => {
-        const data = await r.json().catch(() => ({}))
-        if (!r.ok) {
-          // Prefer server-provided details
-          const upstreamMsg =
-            typeof data?.upstream === "object"
-              ? (data.upstream.error?.message ||
-                 data.upstream.message ||
-                 JSON.stringify(data.upstream))
-              : undefined
-          const msg = data?.error || upstreamMsg || `Failed to fetch resources (${r.status})`
-          throw new Error(msg)
-        }
-        return data
-      })
-      .then((data) => setResources(Array.isArray(data.resources) ? data.resources : []))
-      .catch((err) => {
-        if (err.name !== "AbortError") setResourcesError(err.message)
-      })
-      .finally(() => setResourcesLoading(false))
-  }, 300)
+    try {
+      const q = `${currentNode.title} ${currentNode.description || ""}`.trim().slice(0, 800)
 
-  return () => {
-    clearTimeout(t)
-    ac.abort()
+      const res = await fetch("/api/resources", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ q }),
+        signal: ctrl.signal,
+      })
+
+      const data = await res.json().catch(() => ({} as any))
+
+      if (!res.ok) {
+        const msg =
+          (data && (data.error || data.upstream)) ||
+          `Request failed (${res.status})`
+        throw new Error(typeof msg === "string" ? msg : "Failed to fetch resources")
+      }
+
+      setResources(Array.isArray(data.resources) ? data.resources : [])
+    } catch (err: any) {
+      if (err?.name !== "AbortError") {
+        setResourcesError(err?.message || "Failed to fetch resources")
+      }
+    } finally {
+      setResourcesLoading(false)
+    }
   }
-}, [currentNode])
+
+  fetchResources()
+  return () => ctrl.abort()
+}, [currentNode?.id])
 
 
   const handleProfileSubmit = async (profile: UserProfile) => {
@@ -157,75 +156,92 @@ useEffect(() => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-card to-muted">
-      <div className="container mx-auto p-4">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-  {/* LEFT side: tree + MCQ */}
-  <div className="lg:col-span-2 flex flex-col items-center space-y-6">
-    {/* Header */}
-    <div className="text-center py-4">
-      <div className="inline-flex items-center gap-2 bg-primary/10 px-4 py-2 rounded-full mb-2">
-        <Sprout className="w-4 h-4 text-primary" />
-        <span className="text-sm font-medium text-primary">Growing Your Path</span>
-      </div>
-      <h2 className="text-2xl font-bold">Your Career Growth Tree</h2>
-    </div>
+  <div className="min-h-screen bg-gradient-to-br from-background via-card to-muted">
+    <div className="container mx-auto p-4">
+      {/* 2-column layout on lg+: main content + right sidebar */}
+      <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_380px] gap-6">
+        {/* MAIN COLUMN */}
+        <div className="flex flex-col items-center space-y-6">
+          {/* Header */}
+          <div className="text-center py-4">
+            <div className="inline-flex items-center gap-2 bg-primary/10 px-4 py-2 rounded-full mb-2">
+              <Sprout className="w-4 h-4 text-primary" />
+              <span className="text-sm font-medium text-primary">Growing Your Path</span>
+            </div>
+            <h2 className="text-2xl font-bold">Your Career Growth Tree</h2>
+          </div>
 
-    {/* Tree */}
-    <div className="w-full max-w-6xl">
-      <TreeVisualization
-        pathHistory={pathHistory}
-        activePaths={activePaths}
-        currentNode={currentNode}
-        onNodeClick={handleBacktrack}
-        isGenerating={isGenerating}
-      />
-    </div>
+          {/* Tree Visualization - Main Focus */}
+          <div className="w-full max-w-6xl">
+            <TreeVisualization
+              pathHistory={pathHistory}
+              activePaths={activePaths}
+              currentNode={currentNode}
+              onNodeClick={handleBacktrack}
+              isGenerating={isGenerating}
+            />
+          </div>
 
-    {/* MCQ */}
-    {currentNode && (
-      <div className="w-full max-w-2xl">
-        <MCQInterface
-          node={currentNode}
-          onSelection={handleNodeSelection}
-          isGenerating={isGenerating}
-        />
+          {/* MCQ Interface - Below the tree */}
+          {currentNode && (
+            <div className="w-full max-w-2xl">
+              <MCQInterface
+                node={currentNode}
+                onSelection={handleNodeSelection}
+                isGenerating={isGenerating}
+              />
+            </div>
+          )}
+        </div>
+
+        {/* RIGHT SIDEBAR (sticky on desktop) */}
+        <aside className="lg:pl-2">
+          <div className="lg:sticky lg:top-6">
+            <Card className="bg-card/70 backdrop-blur-sm border">
+              <CardHeader className="pb-3">
+                <CardTitle className="flex items-center gap-2">
+                  <BookOpen className="w-5 h-5" />
+                  Resources to Help You Grow
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="pt-0">
+                {/* Loading / Error / Empty states */}
+                {resourcesLoading && (
+                  <div className="text-sm text-muted-foreground py-6">
+                    Fetching great resources…
+                  </div>
+                )}
+
+                {resourcesError && (
+                  <div className="text-sm text-destructive py-4">
+                    {resourcesError}
+                  </div>
+                )}
+
+                {!resourcesLoading && !resourcesError && resources.length === 0 && (
+                  <div className="text-sm text-muted-foreground py-6">
+                    Pick an option to see tailored articles, courses, and videos here.
+                  </div>
+                )}
+
+                {/* Scrollable list */}
+                {resources.length > 0 && (
+                  <ScrollArea className="max-h-[70vh] pr-2">
+                    <ResourcePanel
+                      resources={resources}
+                      currentNodeId={currentNode?.id}
+                    />
+                  </ScrollArea>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+        </aside>
       </div>
-    )}
+    </div>
   </div>
+)
 
-  {/* RIGHT side: resources */}
-  <aside className="lg:col-span-1">
-    <div className="sticky top-20">
-      <Card className="bg-card/70 backdrop-blur">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <BookOpen className="h-5 w-5" />
-            Resources
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          {resourcesLoading && (
-            <p className="text-sm text-muted-foreground">Asking Gemini for resources…</p>
-          )}
-          {resourcesError && (
-            <p className="text-sm text-red-600">Error: {resourcesError}</p>
-          )}
-          {!resourcesLoading && !resourcesError && resources.length === 0 && (
-            <p className="text-sm text-muted-foreground">
-              Select a step to see curated resources.
-            </p>
-          )}
-          {resources.length > 0 && <ResourcePanel resources={resources} />}
-        </CardContent>
-      </Card>
-    </div>
-  </aside>
-</div>
-
-      </div>
-    </div>
-  )
 }
 
 function ProfileForm({ onSubmit, isLoading }: { onSubmit: (profile: UserProfile) => void; isLoading: boolean }) {

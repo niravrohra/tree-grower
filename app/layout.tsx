@@ -1,13 +1,28 @@
-import type { Metadata } from 'next'
-import { GeistSans } from 'geist/font/sans'
-import { GeistMono } from 'geist/font/mono'
-import { Analytics } from '@vercel/analytics/next'
-import './globals.css'
+import type React from "react"
+import type { Metadata } from "next"
+import { Montserrat, Open_Sans } from "next/font/google"
+import { Analytics } from "@vercel/analytics/next"
+import { Suspense } from "react"
+import "./globals.css"
+
+const montserrat = Montserrat({
+  subsets: ["latin"],
+  variable: "--font-montserrat",
+  weight: ["400", "600", "700", "900"],
+  display: "swap",
+})
+
+const openSans = Open_Sans({
+  subsets: ["latin"],
+  variable: "--font-open-sans",
+  weight: ["400", "500", "600"],
+  display: "swap",
+})
 
 export const metadata: Metadata = {
-  title: 'Tree Grower',
-  description: 'Created by Nirav Rohra',
-  generator: 'Tree Grower',
+  title: "Career Path Explorer - Grow Your Future",
+  description: "Discover your perfect career path with our interactive tree visualization and personalized guidance",
+  generator: "v0.app",
 }
 
 export default function RootLayout({
@@ -17,8 +32,8 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`font-sans ${GeistSans.variable} ${GeistMono.variable}`}>
-        {children}
+      <body className={`font-sans ${montserrat.variable} ${openSans.variable} antialiased`}>
+        <Suspense fallback={null}>{children}</Suspense>
         <Analytics />
       </body>
     </html>

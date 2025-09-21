@@ -2,6 +2,7 @@
 export type Resource = {
   id: string
   title: string
+  tags:string
   description: string
   type: 'course' | 'video' | 'website' | 'tool' | 'thread' | 'paper'
   url?: string
